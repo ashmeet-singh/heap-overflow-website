@@ -2,6 +2,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.6/firebase
 import {
     getAuth,
     createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut,
 } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-auth.js";
 
 const firebaseConfig = {
@@ -17,6 +20,17 @@ const app = initializeApp(firebaseConfig);
 
 const auth = getAuth();
 
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // User is signed in, see docs for a list of available properties
+        const uid = user.uid;
+        console.log(user);
+    } else {
+        // User is signed out
+        console.log("User signed out");
+    }
+});
+
 QS("#SignUpButton").addEventListener("click", function (e) {
     createUserWithEmailAndPassword(
         auth,
@@ -26,12 +40,38 @@ QS("#SignUpButton").addEventListener("click", function (e) {
         .then((userCredential) => {
             // Signed in
             const user = userCredential.user;
-            console.log(user);
             // ...
         })
         .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
             // ..
+        });
+});
+
+QS("#SignInButton").addEventListener("click", function (e) {
+    signInWithEmailAndPassword(
+        auth,
+        QS("#UsernameInput").value,
+        QS("#PasswordInput").value
+    )
+        .then((userCredential) => {
+            // Signed in
+            const user = userCredential.user;
+            // ...
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+        });
+});
+
+QS("#SignOutButton").addEventListener("click", function (e) {
+    signOut(auth)
+        .then(() => {
+            // Sign-out successful.
+        })
+        .catch((error) => {
+            // An error happened.
         });
 });
